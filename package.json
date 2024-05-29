@@ -1,0 +1,14 @@
+{
+  "name": "js-deep-copy",
+  "version": "1.0.0",
+  "description": "모든타입이 사용가능한 Deep Copy 기능",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
