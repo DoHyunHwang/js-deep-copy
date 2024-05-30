@@ -28,7 +28,7 @@ export default function deepCopy(value, seenMap = new Map()) {
       copy[index] = deepCopy(element, seenMap);
     });
   }
-  // Map 복사
+  // Map 복사 (weekMap은 복사 불가..)
   else if (value instanceof Map) {
     copy = new Map();
     seenMap.set(value, copy);
