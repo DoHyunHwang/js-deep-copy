@@ -9,49 +9,49 @@ export default function deepCopy(value, seenMap = new Map()) {
     return seenMap.get(value);
   }
 
-  // 새로운 복사본 생성
-  let copy;
+  // 특정 타입 복사를 위한 객체
+  const constructors = {
+    '[object Date]': () => new Date(value),
+    '[object RegExp]': () => new RegExp(value),
+    '[object Array]': () => {
+      const copy = [];
+      seenMap.set(value, copy);
+      value.forEach((element, index) => {
+        copy[index] = deepCopy(element, seenMap);
+      });
+      return copy;
+    },
+    '[object Map]': () => {
+      const copy = new Map();
+      seenMap.set(value, copy);
+      value.forEach((mapValue, mapKey) => {
+        copy.set(mapKey, deepCopy(mapValue, seenMap));
+      });
+      return copy;
+    },
+    '[object Set]': () => {
+      const copy = new Set();
+      seenMap.set(value, copy);
+      value.forEach((setValue) => {
+        copy.add(deepCopy(setValue, seenMap));
+      });
+      return copy;
+    }
+  };
 
-  // Date 객체 복사
-  if (value instanceof Date) {
-    copy = new Date(value);
+  // 객체의 정확한 타입 확인 (tag)
+  const tag = Object.prototype.toString.call(value);
+  // constructors 객체에 해당 타입이 있을 경우 호출
+  if (constructors[tag]) {
+    return constructors[tag]();
   }
-  // RegExp 객체 복사
-  else if (value instanceof RegExp) {
-    copy = new RegExp(value);
-  }
-  // Array 복사
-  else if (Array.isArray(value)) {
-    copy = [];
-    seenMap.set(value, copy);
-    value.forEach((element, index) => {
-      copy[index] = deepCopy(element, seenMap);
-    });
-  }
-  // Map 복사 (weekMap은 복사 불가..)
-  else if (value instanceof Map) {
-    copy = new Map();
-    seenMap.set(value, copy);
-    value.forEach((mapValue, mapKey) => {
-      copy.set(mapKey, deepCopy(mapValue, seenMap));
-    });
-  }
-  // Set 복사
-  else if (value instanceof Set) {
-    copy = new Set();
-    seenMap.set(value, copy);
-    value.forEach((setValue) => {
-      copy.add(deepCopy(setValue, seenMap));
-    });
-  }
+
   // 일반 객체 복사
-  else {
-    copy = {};
-    seenMap.set(value, copy);
-    Object.keys(value).forEach((key) => {
-      copy[key] = deepCopy(value[key], seenMap);
-    });
-  }
+  const copy = {};
+  seenMap.set(value, copy);
+  Object.keys(value).forEach((key) => {
+    copy[key] = deepCopy(value[key], seenMap);
+  });
 
   return copy;
 }
